@@ -1,0 +1,32 @@
+{
+  "name": "find-shortest-path",
+  "version": "1.0.0",
+  "description": "Trong thời đại công nghiệp 4.0, các kho hàng hiện đại không còn là hình ảnh những người công nhân đẩy xe chở hàng đi lại. Thay vào đó, hàng trăm robot AGV (Automated Guided Vehicle) âm thầm di chuyển, vận chuyển hàng hóa một cách chính xác và hiệu quả. Vậy làm sao để những robot này biết đường đi? Đó chính là lúc các thuật toán tìm đường phát huy tác dụng!",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "typecheck": "tsc",
+    "preview": "vite preview"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "lucide-react": "^0.515.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.1.10",
+    "@types/react": "^19.1.8",
+    "@types/react-dom": "^19.1.6",
+    "@vitejs/plugin-react": "^4.5.2",
+    "autoprefixer": "^10.4.21",
+    "postcss": "^8.5.5",
+    "tailwindcss": "^4.1.10",
+    "typescript": "^5.8.3",
+    "vite": "^6.3.5"
+  }
+}
