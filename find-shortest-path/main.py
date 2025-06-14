@@ -105,34 +105,7 @@ def demo_dijkstra():
 # ============================================
 
 
-def practice_exercise_1():
-    """
-    Bài tập 1: Tìm đường trong mê cung lớn hơn
-    """
-    print("\n\n=== BÀI TẬP 1: MÊ CUNG 7x7 ===\n")
-
-    maze = [
-        [0, 0, 1, 0, 0, 0, 0],
-        [0, 1, 1, 0, 1, 1, 0],
-        [0, 0, 0, 0, 0, 1, 0],
-        [1, 1, 0, 1, 0, 0, 0],
-        [0, 0, 0, 1, 1, 1, 0],
-        [0, 1, 0, 0, 0, 0, 0],
-        [0, 0, 0, 1, 1, 0, 0],
-    ]
-
-    print("Hãy tìm đường từ (0,0) đến (6,6)")
-    print("Gợi ý: Sử dụng hàm bfs_maze đã viết sẵn!")
-
-    # TODO: Học sinh điền code vào đây
-    # path = bfs_maze(maze, (0, 0), (6, 6))
-    # if path:
-    #     print(f"Tìm thấy đường đi với {len(path)} bước!")
-    # else:
-    #     print("Không có đường đi!")
-
-
-def practice_exercise_2():
+def practice_exercise():
     """
     Bài tập 2: Tìm đường đi trong thành phố
     """
@@ -172,10 +145,4 @@ if __name__ == "__main__":
     print("BÀI TẬP THỰC HÀNH")
     print("=" * 50)
 
-    practice_exercise_1()
-    practice_exercise_2()
-
-    print("\n\n💡 Lời khuyên:")
-    print("- Hãy vẽ ra giấy để dễ hình dung!")
-    print("- Thử với ví dụ nhỏ trước khi làm bài lớn")
-    print("- Đừng ngại hỏi thầy cô khi gặp khó khăn!")
+    practice_exercise()
