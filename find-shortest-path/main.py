@@ -1,4 +1,82 @@
 import heapq
+import matplotlib.pyplot as plt
+import networkx as nx
+from matplotlib.patches import FancyBboxPatch
+import matplotlib.patches as mpatches
+
+
+def visualize_graph(graph, shortest_path=None, start=None, end=None, title="Graph Visualization"):
+    """
+    Vẽ đồ thị với matplotlib
+    
+    Input:
+    - graph: Dictionary của đồ thị
+    - shortest_path: List các đỉnh trong đường đi ngắn nhất (optional)
+    - start: Đỉnh bắt đầu (optional)
+    - end: Đỉnh kết thúc (optional)
+    - title: Tiêu đề của đồ thị
+    """
+    # Tạo đồ thị NetworkX
+    G = nx.Graph()
+    
+    # Thêm các cạnh vào đồ thị
+    for node, edges in graph.items():
+        for neighbor, weight in edges:
+            G.add_edge(node, neighbor, weight=weight)
+    
+    # Tạo figure và axis
+    plt.figure(figsize=(12, 8))
+    
+    # Vị trí các node (sử dụng spring layout cho đẹp)
+    pos = nx.spring_layout(G, k=3, iterations=50)
+    
+    # Vẽ tất cả các cạnh
+    nx.draw_networkx_edges(G, pos, edge_color='gray', width=2, alpha=0.5)
+    
+    # Vẽ nhãn trọng số của cạnh
+    edge_labels = nx.get_edge_attributes(G, 'weight')
+    nx.draw_networkx_edge_labels(G, pos, edge_labels, font_size=10)
+    
+    # Màu sắc cho các node
+    node_colors = []
+    for node in G.nodes():
+        if node == start:
+            node_colors.append('lightgreen')  # Màu xanh lá cho điểm bắt đầu
+        elif node == end:
+            node_colors.append('lightcoral')  # Màu đỏ nhạt cho điểm kết thúc
+        elif shortest_path and node in shortest_path:
+            node_colors.append('lightyellow')  # Màu vàng cho các node trên đường đi ngắn nhất
+        else:
+            node_colors.append('lightblue')  # Màu xanh dương cho các node khác
+    
+    # Vẽ các node
+    nx.draw_networkx_nodes(G, pos, node_color=node_colors, node_size=1500, alpha=0.9)
+    
+    # Vẽ nhãn cho các node
+    nx.draw_networkx_labels(G, pos, font_size=12, font_weight='bold')
+    
+    # Nếu có đường đi ngắn nhất, vẽ nó với màu đặc biệt
+    if shortest_path and len(shortest_path) > 1:
+        path_edges = [(shortest_path[i], shortest_path[i+1]) for i in range(len(shortest_path)-1)]
+        nx.draw_networkx_edges(G, pos, edgelist=path_edges, edge_color='red', width=4, alpha=0.8)
+    
+    # Thêm tiêu đề
+    plt.title(title, fontsize=16, fontweight='bold')
+    
+    # Thêm chú giải
+    legend_elements = [
+        mpatches.Patch(color='lightgreen', label='Điểm bắt đầu'),
+        mpatches.Patch(color='lightcoral', label='Điểm kết thúc'),
+        mpatches.Patch(color='lightyellow', label='Trên đường đi ngắn nhất'),
+        mpatches.Patch(color='lightblue', label='Các điểm khác'),
+        mpatches.Patch(color='red', label='Đường đi ngắn nhất', linewidth=3)
+    ]
+    plt.legend(handles=legend_elements, loc='upper right', bbox_to_anchor=(1.15, 1))
+    
+    # Ẩn các trục
+    plt.axis('off')
+    plt.tight_layout()
+    plt.show()
 
 
 def dijkstra(graph, start, end):
@@ -69,7 +147,7 @@ def demo_dijkstra():
     # Đồ thị biểu diễn bản đồ
     # Mỗi đỉnh kết nối với (đỉnh_kề, khoảng_cách)
     graph = {
-        "Nhà": [("Chợ", 3), ("Công viên", 2)],
+        "Nhà": [("Chợ", 4), ("Công viên", 2)],
         "Chợ": [("Nhà", 3), ("Trường", 4), ("Bệnh viện", 2)],
         "Công viên": [("Nhà", 2), ("Trường", 5), ("Thư viện", 1)],
         "Trường": [("Chợ", 4), ("Công viên", 5), ("Bệnh viện", 3)],
@@ -86,6 +164,10 @@ def demo_dijkstra():
     print("- Công viên → Thư viện: 1km")
     print("- Trường → Bệnh viện: 3km")
     print("- Bệnh viện → Thư viện: 4km")
+    
+    # Hiển thị đồ thị ban đầu
+    print("\nĐang hiển thị bản đồ...")
+    visualize_graph(graph, title="Bản đồ thành phố - Tất cả các đường")
 
     start = "Nhà"
     end = "Trường"
@@ -96,6 +178,11 @@ def demo_dijkstra():
     if distance < float("inf"):
         print(f"\nĐường đi ngắn nhất: {' → '.join(path)}")
         print(f"Tổng khoảng cách: {distance}km")
+        
+        # Hiển thị đồ thị với đường đi ngắn nhất
+        print("\nĐang hiển thị đường đi ngắn nhất...")
+        visualize_graph(graph, shortest_path=path, start=start, end=end, 
+                       title=f"Đường đi ngắn nhất từ {start} đến {end} ({distance}km)")
     else:
         print("\nKhông tìm thấy đường đi!")
 
