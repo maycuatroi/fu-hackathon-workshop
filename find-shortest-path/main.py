@@ -25,17 +25,31 @@ def visualize_graph(graph, shortest_path=None, start=None, end=None, title="Grap
             G.add_edge(node, neighbor, weight=weight)
     
     # Tạo figure và axis
-    plt.figure(figsize=(12, 8))
+    plt.figure(figsize=(14, 10))
     
-    # Vị trí các node (sử dụng spring layout cho đẹp)
-    pos = nx.spring_layout(G, k=3, iterations=50)
+    # Sử dụng Kamada-Kawai layout - tốt hơn cho việc thể hiện khoảng cách
+    # Layout này cố gắng đặt các node theo tỷ lệ với khoảng cách thực tế
+    pos = nx.kamada_kawai_layout(G, weight='weight', scale=3)
     
-    # Vẽ tất cả các cạnh
-    nx.draw_networkx_edges(G, pos, edge_color='gray', width=2, alpha=0.5)
+    # Lấy tất cả trọng số để tính toán độ dày cạnh
+    edge_weights = [G[u][v]['weight'] for u, v in G.edges()]
+    max_weight = max(edge_weights) if edge_weights else 1
+    min_weight = min(edge_weights) if edge_weights else 1
     
-    # Vẽ nhãn trọng số của cạnh
+    # Vẽ tất cả các cạnh với độ dày tỷ lệ nghịch với khoảng cách
+    # (cạnh ngắn hơn sẽ dày hơn)
+    for (u, v) in G.edges():
+        weight = G[u][v]['weight']
+        # Độ dày từ 1 đến 5, tỷ lệ nghịch với weight
+        width = 5 - ((weight - min_weight) / (max_weight - min_weight)) * 4 if max_weight != min_weight else 3
+        nx.draw_networkx_edges(G, pos, [(u, v)], edge_color='gray', width=width, alpha=0.6)
+    
+    # Vẽ nhãn trọng số của cạnh với font lớn hơn và background
     edge_labels = nx.get_edge_attributes(G, 'weight')
-    nx.draw_networkx_edge_labels(G, pos, edge_labels, font_size=10)
+    # Format nhãn với đơn vị km
+    formatted_labels = {k: f'{v}km' for k, v in edge_labels.items()}
+    nx.draw_networkx_edge_labels(G, pos, formatted_labels, font_size=11, 
+                                bbox=dict(boxstyle="round,pad=0.3", facecolor="white", alpha=0.8))
     
     # Màu sắc cho các node
     node_colors = []
@@ -49,16 +63,21 @@ def visualize_graph(graph, shortest_path=None, start=None, end=None, title="Grap
         else:
             node_colors.append('lightblue')  # Màu xanh dương cho các node khác
     
-    # Vẽ các node
-    nx.draw_networkx_nodes(G, pos, node_color=node_colors, node_size=1500, alpha=0.9)
+    # Vẽ các node với viền
+    nx.draw_networkx_nodes(G, pos, node_color=node_colors, node_size=2000, alpha=0.9,
+                          edgecolors='black', linewidths=2)
     
     # Vẽ nhãn cho các node
-    nx.draw_networkx_labels(G, pos, font_size=12, font_weight='bold')
+    nx.draw_networkx_labels(G, pos, font_size=14, font_weight='bold')
     
     # Nếu có đường đi ngắn nhất, vẽ nó với màu đặc biệt
     if shortest_path and len(shortest_path) > 1:
         path_edges = [(shortest_path[i], shortest_path[i+1]) for i in range(len(shortest_path)-1)]
-        nx.draw_networkx_edges(G, pos, edgelist=path_edges, edge_color='red', width=4, alpha=0.8)
+        # Vẽ đường đi ngắn nhất với độ dày lớn hơn
+        for i in range(len(shortest_path)-1):
+            u, v = shortest_path[i], shortest_path[i+1]
+            nx.draw_networkx_edges(G, pos, [(u, v)], edge_color='red', width=6, alpha=0.8,
+                                 style='solid', arrows=True, arrowsize=20, arrowstyle='->')
     
     # Thêm tiêu đề
     plt.title(title, fontsize=16, fontweight='bold')
@@ -69,9 +88,10 @@ def visualize_graph(graph, shortest_path=None, start=None, end=None, title="Grap
         mpatches.Patch(color='lightcoral', label='Điểm kết thúc'),
         mpatches.Patch(color='lightyellow', label='Trên đường đi ngắn nhất'),
         mpatches.Patch(color='lightblue', label='Các điểm khác'),
-        mpatches.Patch(color='red', label='Đường đi ngắn nhất', linewidth=3)
+        mpatches.Patch(color='red', label='Đường đi ngắn nhất', linewidth=3),
+        mpatches.Patch(color='gray', label='Độ dày cạnh tỷ lệ nghịch với khoảng cách', alpha=0.6)
     ]
-    plt.legend(handles=legend_elements, loc='upper right', bbox_to_anchor=(1.15, 1))
+    plt.legend(handles=legend_elements, loc='upper right', bbox_to_anchor=(1.2, 1))
     
     # Ẩn các trục
     plt.axis('off')
@@ -147,12 +167,12 @@ def demo_dijkstra():
     # Đồ thị biểu diễn bản đồ
     # Mỗi đỉnh kết nối với (đỉnh_kề, khoảng_cách)
     graph = {
-        "Nhà": [("Chợ", 4), ("Công viên", 2)],
-        "Chợ": [("Nhà", 3), ("Trường", 4), ("Bệnh viện", 2)],
+        "Nhà": [("Chợ", 3), ("Công viên", 2)],
+        "Chợ": [("Nhà", 3), ("Trường", 7), ("Bệnh viện", 2)],
         "Công viên": [("Nhà", 2), ("Trường", 5), ("Thư viện", 1)],
-        "Trường": [("Chợ", 4), ("Công viên", 5), ("Bệnh viện", 3)],
+        "Trường": [("Chợ", 7), ("Công viên", 5), ("Bệnh viện", 3), ("Thư viện", 2)],
         "Bệnh viện": [("Chợ", 2), ("Trường", 3), ("Thư viện", 4)],
-        "Thư viện": [("Công viên", 1), ("Bệnh viện", 4)],
+        "Thư viện": [("Công viên", 1), ("Bệnh viện", 4), ("Trường",2)],
     }
 
     print("Bản đồ thành phố:")
