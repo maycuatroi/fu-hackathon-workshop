@@ -5,7 +5,7 @@ from matplotlib.patches import FancyBboxPatch
 import matplotlib.patches as mpatches
 
 
-def visualize_graph(graph, shortest_path=None, start=None, end=None, title="Graph Visualization"):
+def visualize_graph(graph, shortest_path=None, start=None, end=None, title="Graph Visualization", filename=None):
     """
     Vẽ đồ thị với matplotlib
     
@@ -15,6 +15,7 @@ def visualize_graph(graph, shortest_path=None, start=None, end=None, title="Grap
     - start: Đỉnh bắt đầu (optional)
     - end: Đỉnh kết thúc (optional)
     - title: Tiêu đề của đồ thị
+    - filename: Tên file PNG để lưu (optional). Nếu không có, sẽ hiển thị trực tiếp
     """
     # Tạo đồ thị NetworkX
     G = nx.Graph()
@@ -96,7 +97,14 @@ def visualize_graph(graph, shortest_path=None, start=None, end=None, title="Grap
     # Ẩn các trục
     plt.axis('off')
     plt.tight_layout()
-    plt.show()
+    
+    # Lưu vào file nếu có filename, nếu không thì hiển thị
+    if filename:
+        plt.savefig(filename, dpi=300, bbox_inches='tight')
+        print(f"Đã lưu đồ thị vào file: {filename}")
+        plt.close()
+    else:
+        plt.show()
 
 
 def dijkstra(graph, start, end):
@@ -186,8 +194,8 @@ def demo_dijkstra():
     print("- Bệnh viện → Thư viện: 4km")
     
     # Hiển thị đồ thị ban đầu
-    print("\nĐang hiển thị bản đồ...")
-    visualize_graph(graph, title="Bản đồ thành phố - Tất cả các đường")
+    print("\nĐang lưu bản đồ...")
+    visualize_graph(graph, title="Bản đồ thành phố - Tất cả các đường", filename="city_map.png")
 
     start = "Nhà"
     end = "Trường"
@@ -200,9 +208,10 @@ def demo_dijkstra():
         print(f"Tổng khoảng cách: {distance}km")
         
         # Hiển thị đồ thị với đường đi ngắn nhất
-        print("\nĐang hiển thị đường đi ngắn nhất...")
+        print("\nĐang lưu đường đi ngắn nhất...")
         visualize_graph(graph, shortest_path=path, start=start, end=end, 
-                       title=f"Đường đi ngắn nhất từ {start} đến {end} ({distance}km)")
+                       title=f"Đường đi ngắn nhất từ {start} đến {end} ({distance}km)",
+                       filename="shortest_path.png")
     else:
         print("\nKhông tìm thấy đường đi!")
 
