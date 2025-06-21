@@ -1,0 +1,5 @@
+requests
+matplotlib
+networkx
+numpy
+rich
